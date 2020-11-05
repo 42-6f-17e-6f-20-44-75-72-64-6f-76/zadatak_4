@@ -18,8 +18,5 @@
     <ClCompile Include="zadatak_4.vcxproj.filters.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
 </Project>
