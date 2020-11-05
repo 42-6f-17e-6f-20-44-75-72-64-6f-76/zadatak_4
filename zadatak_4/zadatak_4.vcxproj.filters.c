@@ -2,7 +2,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#define lineLength 128
 #define foreach(p,head) \
 	for (Position p = head; p != NULL; p = p->next) 
 
@@ -37,7 +37,8 @@ int main(void) {
 
 
 	unosIzDatoteke(&pHead, &qHead, "polinom.txt");
-	
+
+	/*
 	insertAfter(getLast(&pHead), create(3,2));
 	insertAfter(getLast(&pHead), create(7, 5));
 	insertAfter(getLast(&pHead), create(2, 10));
@@ -47,6 +48,7 @@ int main(void) {
 	insertAfter(getLast(&qHead), create(9, 5));
 	insertAfter(getLast(&qHead), create(8, 8));
 	insertAfter(getLast(&qHead), create(-2, 10));
+	*/
 
 	sortOut(&pHead, &qHead, &rHead);
 
@@ -62,7 +64,7 @@ int main(void) {
 
 	return EXIT_SUCCESS;
 }
-int unosIzDatoteke(Position p, Position r, char* file) {
+int unosIzDatoteke(Position p, Position q, char* file) {
 	FILE* fp = NULL;
 	fp = fopen(file, "r");
 	if (fp == NULL)
@@ -70,35 +72,73 @@ int unosIzDatoteke(Position p, Position r, char* file) {
 		puts("Neuspjesno otvaranje datoteke!");
 		return -1;
 	}
-	/*int a, b, c, e;
-	sscanf(fp, "%d %u %d %u %n", &coeff, &exp, &n);
-	fp += n;
-	);
-	*/
 
+	int a, b, c, d;
+	int n=0;
+	char buffer[lineLength];
+	char* poi = NULL;
+	int cnt;
+
+	while (fgets(buffer, lineLength, fp) != NULL)
+	{
+		poi = buffer;
+		while (*poi) {
+			n = 0;
+			cnt = sscanf(poi, "%d %d %d %d %n", &a, &b, &c, &d, &n);
+			if (cnt >= 1) {
+				poi += n;//no error increase pointer for amount of read characters
+				//printf("%d %d %d %d %d", a, b, c, d, n);
+			
+				insertAfter(getLast(p), create(a, b));
+				insertAfter(getLast(q), create(c, d));
+			}
+			else {
+				poi++;//ERROR occured->skip one character and repeat
+			}
+		}
+	}
 }
 
 int sortOut(Position p, Position q, Position r) {
 
-	p = p->next;
+	p = p->next;//skip EMPTY head elements
 	q = q->next;
 
 	while (p->next != NULL && q->next != NULL) {
 
-		if (p->exp == q->exp) {
-			insertAfter(getLast(r), create((p->coef + q->coef), p->exp));
+		if (p->coef != 0 && q->coef != 0)
+		{
+			if (p->exp == q->exp) {
+				insertAfter(getLast(r), create((p->coef + q->coef), p->exp));
+				p = p->next;
+				q = q->next;
+			}
+			else if (p->exp > q->exp) {
+				insertAfter(getLast(r), create((q->coef), q->exp));
+				q = q->next;
+			}
+			else if (p->exp < q->exp) {
+				insertAfter(getLast(r), create((p->coef), p->exp));
+				p = p->next;
+			}
+		}
+		else if (p->coef == 0)
+		{
+			insertAfter(getLast(r), create((q->coef), q->exp));
 			p = p->next;
 			q = q->next;
 		}
-		else if (p->exp > q->exp) {
-			insertAfter(getLast(r), create((q->coef), q->exp));
-			q = q->next;
-		}
-		else if (p->exp < q->exp) {
+		else if (q->coef == 0)
+		{
 			insertAfter(getLast(r), create((p->coef), p->exp));
 			p = p->next;
+			q = q->next;
 		}
-
+		else		//p->coef == 0 && q->coef == 0
+		{
+			p = p->next;
+			q = q->next;
+		}
 	}
 
 	if (p->next != NULL)
