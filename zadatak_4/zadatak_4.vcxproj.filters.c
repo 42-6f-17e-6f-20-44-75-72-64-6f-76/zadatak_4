@@ -73,7 +73,8 @@ int unosIzDatoteke(Position p, Position q, char* file) {
 		return -1;
 	}
 
-	int a, b, c, d;
+	int a, c;
+	size_t b, d;
 	int n=0;
 	char buffer[lineLength];
 	char* poi = NULL;
@@ -84,7 +85,7 @@ int unosIzDatoteke(Position p, Position q, char* file) {
 		poi = buffer;
 		while (*poi) {
 			n = 0;
-			cnt = sscanf(poi, "%d %d %d %d %n", &a, &b, &c, &d, &n);
+			cnt = sscanf(poi, "%d %u %d %u %n", &a, &b, &c, &d, &n);
 			if (cnt >= 1) {
 				poi += n;//no error increase pointer for amount of read characters
 				//printf("%d %d %d %d %d", a, b, c, d, n);
@@ -94,6 +95,7 @@ int unosIzDatoteke(Position p, Position q, char* file) {
 			}
 			else {
 				poi++;//ERROR occured->skip one character and repeat
+				perror(stderr);
 			}
 		}
 	}
@@ -197,3 +199,5 @@ int printList(Position head) {
 
 	return 0;
 }
+
+//resources: https://stackoverflow.com/questions/59809443/sscanf-in-c-reading-numbers-from-a-txt-file
