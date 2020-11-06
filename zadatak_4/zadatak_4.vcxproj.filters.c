@@ -19,9 +19,12 @@ typedef struct _node {
 
 Position create(int, size_t);
 Position getLast(Position);
+int clone(Position);
 int insertAfter(Position, Position);
-int printList(Position);
-int sortOut(Position, Position, Position);
+int printListSum(Position);
+int printListProduct(Position);
+int sum(Position, Position, Position);
+int multiply(Position, Position, Position);
 int unosIzDatoteke(Position, Position, char*);
 
 int main(void) {
@@ -35,6 +38,8 @@ int main(void) {
 	Node rHead;
 	rHead.next = NULL;
 
+	Node mHead;
+	mHead.next = NULL;
 
 	unosIzDatoteke(&pHead, &qHead, "polinom.txt");
 
@@ -50,15 +55,20 @@ int main(void) {
 	insertAfter(getLast(&qHead), create(-2, 10));
 	*/
 
-	sortOut(&pHead, &qHead, &rHead);
+	
 
-	printf("\np lista...");
-	printList(&pHead);
-	printf("\nq lista...");
-	printList(&qHead);
-	printf("\nr lista...");
-	printList(&rHead);
+	printf("\nPOLINOM p lista...");
+	printListSum(&pHead);
+	printf("\nPOLINOM q lista...");
+	printListSum(&qHead);
 
+	sum(&pHead, &qHead, &rHead);
+	printf("\nPOLINOM r lista zbroj...");
+	printListSum(&rHead);
+
+	multiply(&pHead, &qHead, &mHead);
+	printf("\nPOLINOM m lista umnozak...");
+	printListProduct(&mHead);
 
 	system("pause");
 
@@ -89,8 +99,9 @@ int unosIzDatoteke(Position p, Position q, char* file) {
 			if (cnt >= 1) {
 				poi += n;//no error increase pointer for amount of read characters
 				//printf("%d %d %d %d %d", a, b, c, d, n);
-			
+			if(a != 0)
 				insertAfter(getLast(p), create(a, b));
+			if (c != 0)
 				insertAfter(getLast(q), create(c, d));
 			}
 			else {
@@ -101,16 +112,18 @@ int unosIzDatoteke(Position p, Position q, char* file) {
 	}
 }
 
-int sortOut(Position p, Position q, Position r) {
-
+int sum(Position p, Position q, Position r) {
+	if (p != NULL)
 	p = p->next;//skip EMPTY head elements
+	if(q != NULL)
 	q = q->next;
-
-	while (p->next != NULL && q->next != NULL) {
-
+	int sum = 0;
+	while (p != NULL && q != NULL) {
+		
 		if (p->coef != 0 && q->coef != 0)
 		{
 			if (p->exp == q->exp) {
+				if(sum = (p->coef + q->coef) != 0)
 				insertAfter(getLast(r), create((p->coef + q->coef), p->exp));
 				p = p->next;
 				q = q->next;
@@ -143,13 +156,63 @@ int sortOut(Position p, Position q, Position r) {
 		}
 	}
 
-	if (p->next != NULL)
-		foreach(g, p->next)
-		insertAfter(getLast(r), create((p->coef), p->exp));
+	if (p != NULL)
+		foreach(g, p){
+			if (g->coef != 0)
+			insertAfter(getLast(r), create((g->coef), g->exp));
+		}
 
-	else if (q->next != NULL)
-		foreach(g, q->next)
-		insertAfter(getLast(r), create((q->coef), q->exp));
+	else if (q != NULL)
+		foreach(g, q) {
+			if (g->coef != 0)
+				insertAfter(getLast(r), create((g->coef), g->exp));
+		}
+			
+
+	return 0;
+}
+
+int multiply(Position p, Position q, Position r) {
+
+	Node temp;
+	Node rclone;
+	Node res;
+	
+	p = p->next;//skip EMPTY head elements
+	q = q->next;
+
+	rclone.next = NULL;
+
+	foreach(g, p){
+		//
+		temp.next = NULL;
+		res.next = NULL;
+
+		foreach(l, q){		
+			insertAfter(getLast(&temp), create((g->coef*l->coef), (g->exp+l->exp)));
+		}
+
+		printf("\n\n----->TEMP");
+		printListSum(&temp);
+		printf("----->PREVIOUS RESULT");
+		printListSum(&rclone);
+		sum(&temp, &rclone, &res);
+		printf("----->CURRENT RESULT");
+		printListSum(&res);
+
+		clone(&res,&rclone);
+		
+	}
+
+	clone(&res, r);
+		
+	return 0;
+}
+
+int clone(Position what, Position where) {
+
+	foreach(p, what->next)
+		insertAfter(getLast(where), create(p->coef, p->exp));
 
 	return 0;
 }
@@ -188,14 +251,32 @@ Position create(int k, size_t e) {
 	return el;
 }
 
-int printList(Position head) {
+int printListSum(Position head) {
 
 	printf("\r\n\rLIST CONTENT:\r\n");
 
-	foreach(p, head->next)
-		printf(" %d^(%u) ->", p->coef, p->exp);
+	foreach(p, head->next) {
+		printf(" %d*x^(%u) ", p->coef, p->exp);
+		if (p->next != NULL)
+			printf("+");
+	}
 
-	puts(" NULL\n");
+	puts("\n");
+
+	return 0;
+}
+
+int printListProduct(Position head) {
+
+	printf("\r\n\rLIST CONTENT:\r\n");
+
+	foreach(p, head->next){
+		printf(" %d*x^(%u) ", p->coef, p->exp);
+		if (p->next != NULL)
+			printf("*");
+	}
+
+	puts("\n");
 
 	return 0;
 }
