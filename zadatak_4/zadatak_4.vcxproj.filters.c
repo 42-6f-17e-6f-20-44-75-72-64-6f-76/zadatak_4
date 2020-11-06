@@ -16,7 +16,6 @@ typedef struct _node {
 	Position next;
 }Node;
 
-
 Position create(int, size_t);
 Position getLast(Position);
 int clone(Position);
@@ -74,6 +73,7 @@ int main(void) {
 
 	return EXIT_SUCCESS;
 }
+
 int unosIzDatoteke(Position p, Position q, char* file) {
 	FILE* fp = NULL;
 	fp = fopen(file, "r");
@@ -184,7 +184,7 @@ int multiply(Position p, Position q, Position r) {
 	rclone.next = NULL;
 
 	foreach(g, p){
-		//
+		
 		temp.next = NULL;
 		res.next = NULL;
 
@@ -192,13 +192,15 @@ int multiply(Position p, Position q, Position r) {
 			insertAfter(getLast(&temp), create((g->coef*l->coef), (g->exp+l->exp)));
 		}
 
-		printf("\n\n----->TEMP");
-		printListSum(&temp);
-		printf("----->PREVIOUS RESULT");
-		printListSum(&rclone);
-		sum(&temp, &rclone, &res);
-		printf("----->CURRENT RESULT");
-		printListSum(&res);
+		//printf("\n\n----->TEMP");
+		//printListSum(&temp);
+		//printf("----->PREVIOUS RESULT");
+		//printListSum(&rclone);
+		//sum(&temp, &rclone, &res);
+		//printf("----->CURRENT RESULT");
+		//printListSum(&res);
+
+		rclone.next = NULL;
 
 		clone(&res,&rclone);
 		
