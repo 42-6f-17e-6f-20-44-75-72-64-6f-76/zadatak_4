@@ -74,6 +74,8 @@ int main(void) {
 	return EXIT_SUCCESS;
 }
 
+
+
 int unosIzDatoteke(Position p, Position q, char* file) {
 	FILE* fp = NULL;
 	fp = fopen(file, "r");
@@ -90,26 +92,67 @@ int unosIzDatoteke(Position p, Position q, char* file) {
 	char* poi = NULL;
 	int cnt;
 
+
+	Node temp;
+	Node rclone;
+	Node res;
+	rclone.next = NULL;
+
+	Node temp2;
+	Node rclone2;
+	Node res2;
+	rclone2.next = NULL;
+
+
 	while (fgets(buffer, lineLength, fp) != NULL)
 	{
 		poi = buffer;
 		while (*poi) {
+
+			temp.next = NULL;
+			res.next = NULL;
+
+			temp2.next = NULL;
+			res2.next = NULL;
+
 			n = 0;
 			cnt = sscanf(poi, "%d %u %d %u %n", &a, &b, &c, &d, &n);
 			if (cnt >= 1) {
 				poi += n;//no error increase pointer for amount of read characters
 				//printf("%d %d %d %d %d", a, b, c, d, n);
-			if(a != 0)
-				insertAfter(getLast(p), create(a, b));
-			if (c != 0)
-				insertAfter(getLast(q), create(c, d));
+			if(a != 0){
+				insertAfter(getLast(&temp), create(a, b));
+				//insertAfter(getLast(p), create(a, b)); //if input is already sorted, faster
+			}
+				
+			sum(&temp, &rclone, &res);
+			rclone.next = NULL;
+			clone(&res, &rclone);
+
+				
+			if (c != 0){
+				insertAfter(getLast(&temp2), create(c, d));
+				//insertAfter(getLast(q), create(c, d)); //if input is already sorted, faster
+			}
+
+			sum(&temp2, &rclone2, &res2);
+			rclone2.next = NULL;
+			clone(&res2, &rclone2);
+				
 			}
 			else {
 				poi++;//ERROR occured->skip one character and repeat
 				perror(stderr);
 			}
 		}
+
+
 	}
+
+	clone(&res, p);
+	clone(&res2, q);
+
+	return 0;
 }
 
 int sum(Position p, Position q, Position r) {
@@ -196,7 +239,7 @@ int multiply(Position p, Position q, Position r) {
 		//printListSum(&temp);
 		//printf("----->PREVIOUS RESULT");
 		//printListSum(&rclone);
-		//sum(&temp, &rclone, &res);
+		sum(&temp, &rclone, &res);
 		//printf("----->CURRENT RESULT");
 		//printListSum(&res);
 
